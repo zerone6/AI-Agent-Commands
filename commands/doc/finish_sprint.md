@@ -72,22 +72,23 @@ docs/
 ```
 
 ### 코드블럭
-```
+
 언어 명시:
-```javascript
+
+````javascript
 function example() {}
-```
+````
 
-```http
+````http
 GET /api/endpoint
-```
+````
 
-```sql
+````sql
 SELECT * FROM table;
-```
-```
+````
 
 ### 표 형식
+
 ```markdown
 | 컬럼1 | 컬럼2 | 컬럼3 |
 |------|------|------|
