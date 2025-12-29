@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/seonpillhwang/.claude/hooks/cc_ring/play-sound-cc-ring-cc4e8b3a-9f1d-4c2a-b5e7-3d8f6a2c1b9e.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}

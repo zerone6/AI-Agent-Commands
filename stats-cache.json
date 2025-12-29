@@ -1,0 +1,216 @@
+{
+  "version": 1,
+  "lastComputedDate": "2025-12-28",
+  "dailyActivity": [
+    {
+      "date": "2025-11-07",
+      "messageCount": 2424,
+      "sessionCount": 2,
+      "toolCallCount": 823
+    },
+    {
+      "date": "2025-11-08",
+      "messageCount": 59,
+      "sessionCount": 2,
+      "toolCallCount": 8
+    },
+    {
+      "date": "2025-11-13",
+      "messageCount": 542,
+      "sessionCount": 1,
+      "toolCallCount": 202
+    },
+    {
+      "date": "2025-11-15",
+      "messageCount": 1857,
+      "sessionCount": 3,
+      "toolCallCount": 646
+    },
+    {
+      "date": "2025-11-16",
+      "messageCount": 4621,
+      "sessionCount": 1,
+      "toolCallCount": 1587
+    },
+    {
+      "date": "2025-11-22",
+      "messageCount": 307,
+      "sessionCount": 2,
+      "toolCallCount": 112
+    },
+    {
+      "date": "2025-11-23",
+      "messageCount": 4275,
+      "sessionCount": 1,
+      "toolCallCount": 1554
+    },
+    {
+      "date": "2025-12-19",
+      "messageCount": 2,
+      "sessionCount": 1,
+      "toolCallCount": 0
+    },
+    {
+      "date": "2025-12-22",
+      "messageCount": 1359,
+      "sessionCount": 1,
+      "toolCallCount": 476
+    },
+    {
+      "date": "2025-12-23",
+      "messageCount": 1065,
+      "sessionCount": 1,
+      "toolCallCount": 371
+    },
+    {
+      "date": "2025-12-24",
+      "messageCount": 3540,
+      "sessionCount": 1,
+      "toolCallCount": 1182
+    },
+    {
+      "date": "2025-12-25",
+      "messageCount": 3,
+      "sessionCount": 1,
+      "toolCallCount": 0
+    },
+    {
+      "date": "2025-12-26",
+      "messageCount": 715,
+      "sessionCount": 4,
+      "toolCallCount": 116
+    },
+    {
+      "date": "2025-12-28",
+      "messageCount": 3235,
+      "sessionCount": 7,
+      "toolCallCount": 983
+    }
+  ],
+  "dailyModelTokens": [
+    {
+      "date": "2025-11-07",
+      "tokensByModel": {
+        "claude-sonnet-4-5-20250929": 348118
+      }
+    },
+    {
+      "date": "2025-11-08",
+      "tokensByModel": {
+        "claude-sonnet-4-5-20250929": 21785
+      }
+    },
+    {
+      "date": "2025-11-13",
+      "tokensByModel": {
+        "claude-sonnet-4-5-20250929": 173494
+      }
+    },
+    {
+      "date": "2025-11-15",
+      "tokensByModel": {
+        "claude-sonnet-4-5-20250929": 815409
+      }
+    },
+    {
+      "date": "2025-11-16",
+      "tokensByModel": {
+        "claude-sonnet-4-5-20250929": 720538
+      }
+    },
+    {
+      "date": "2025-11-22",
+      "tokensByModel": {
+        "claude-sonnet-4-5-20250929": 39896
+      }
+    },
+    {
+      "date": "2025-11-23",
+      "tokensByModel": {
+        "claude-sonnet-4-5-20250929": 630312
+      }
+    },
+    {
+      "date": "2025-12-22",
+      "tokensByModel": {
+        "claude-sonnet-4-5-20250929": 214311
+      }
+    },
+    {
+      "date": "2025-12-23",
+      "tokensByModel": {
+        "claude-opus-4-5-20251101": 135051
+      }
+    },
+    {
+      "date": "2025-12-24",
+      "tokensByModel": {
+        "claude-opus-4-5-20251101": 452956
+      }
+    },
+    {
+      "date": "2025-12-25",
+      "tokensByModel": {
+        "claude-opus-4-5-20251101": 317
+      }
+    },
+    {
+      "date": "2025-12-26",
+      "tokensByModel": {
+        "claude-opus-4-5-20251101": 71519
+      }
+    },
+    {
+      "date": "2025-12-28",
+      "tokensByModel": {
+        "claude-opus-4-5-20251101": 462276
+      }
+    }
+  ],
+  "modelUsage": {
+    "claude-sonnet-4-5-20250929": {
+      "inputTokens": 125205,
+      "outputTokens": 2838658,
+      "cacheReadInputTokens": 711561703,
+      "cacheCreationInputTokens": 39214202,
+      "webSearchRequests": 0,
+      "costUSD": 0,
+      "contextWindow": 0
+    },
+    "claude-opus-4-5-20251101": {
+      "inputTokens": 109094,
+      "outputTokens": 1013025,
+      "cacheReadInputTokens": 424027204,
+      "cacheCreationInputTokens": 32991891,
+      "webSearchRequests": 0,
+      "costUSD": 0,
+      "contextWindow": 0
+    }
+  },
+  "totalSessions": 28,
+  "totalMessages": 24004,
+  "longestSession": {
+    "sessionId": "5bbfb785-7119-4574-9bc5-fa6e33279045",
+    "duration": 687695451,
+    "messageCount": 2175,
+    "timestamp": "2025-11-07T09:26:30.502Z"
+  },
+  "firstSessionDate": "2025-11-07T08:59:48.176Z",
+  "hourCounts": {
+    "0": 1,
+    "5": 2,
+    "6": 1,
+    "7": 1,
+    "8": 2,
+    "9": 1,
+    "10": 1,
+    "12": 3,
+    "13": 1,
+    "15": 3,
+    "17": 2,
+    "18": 7,
+    "20": 1,
+    "21": 1,
+    "22": 1
+  }
+}
