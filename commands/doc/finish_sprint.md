@@ -1,104 +1,123 @@
 ---
 agent: agent
-description: "Sprint 종료 시점에 따라 문서 정리 및 커밋 로그 작성 절차입니다."
+description: "Sprint 종료 시 문서 정리 및 아카이브"
 ---
 
-다음과 같이 Sprint 종료 작업을 수행합니다.
+Sprint의 모든 ORDER가 완료된 후, 문서 정리 및 아카이브를 수행한다.
 
-▼구체적인 순서
-1. current_sprint/ 정리:
-   - 완료된 ORDER/REFACTORING 파일 검토
-   - 작업 결과 섹션 완성
+## 사전 확인
 
-2. Sprint 요약 생성:
-   - docs/sprints/SPRINT_{YYYY_MM_DD}.md 생성
-   - 주요 성과, 변경 파일 목록, 다음 계획 작성
+- [ ] main 브랜치에 모든 변경사항 머지 완료
+- [ ] 잔여 feature 브랜치 없음
+- [ ] 전체 테스트 통과
 
-3. 파일 이동:
-   - current_sprint/ORDER*.md → docs/sprints/sprint{N}/
-   - current_sprint/REFACTORING*.md → docs/sprints/sprint{N}/
-   - 또는 current_sprint/backup/ 으로 백업
+## 종료 순서
 
-4. README.md 업데이트:
-   - "최근 Sprint" 섹션에 1-2줄 추가
-   - Sprint 요약 파일 링크 추가
+### 1. Sprint 번호 결정
 
-5. TODO.md 정리:
-   - 완료 항목 제거
-   - 새로운 Technical Debt 추가
+`/docs/sprints/` 폴더의 기존 sprint 폴더 확인 후 +1:
 
-6. Git 커밋 로그 작성:
-   - CLAUDE.md파일의 커밋 로그 룰에 따라 작성
+```bash
+ls /docs/sprints/
+# sprint1, sprint2 존재 -> 신규: sprint3
+```
 
-## 📁 문서 구조
+### 2. Sprint 요약 문서 생성
+
+파일 경로:
+```
+/docs/sprints/SPRINT_YYYY_MM_DD.md
+```
+
+템플릿:
+
+```markdown
+# Sprint N 요약
+
+## 기간
+YYYY-MM-DD ~ YYYY-MM-DD
+
+## 주요 성과
+- 성과 1
+- 성과 2
+
+## 완료된 ORDER
+| 파일 | 제목 | 요약 |
+|------|------|------|
+| orderMMDDNN.md | 제목 | 1줄 요약 |
+
+## 변경된 주요 파일
+- /path/to/file1
+- /path/to/file2
+
+## 다음 Sprint 계획
+- 계획 1
+- 계획 2
+
+## 잔여 이슈
+- 이슈 1
+```
+
+### 3. 파일 이동
+
+current_sprint의 완료된 파일을 sprint 폴더로 이동:
+
+```bash
+# Sprint 폴더 생성
+mkdir -p /docs/sprints/sprint{N}
+
+# ORDER 파일 이동
+mv /docs/current_sprint/order*.md /docs/sprints/sprint{N}/
+
+# SAVETEMP 파일 이동
+mv /docs/current_sprint/SAVETEMP_*.md /docs/sprints/sprint{N}/
+
+# REFACTORING 파일 이동 (해당 시)
+mv /docs/current_sprint/REFACTORING*.md /docs/sprints/sprint{N}/
+```
+
+이동 후 `/docs/current_sprint/`는 비어있는 상태가 된다.
+
+### 4. 문서 업데이트
+
+#### 4.1 README.md
+
+"최근 Sprint" 섹션에 추가:
+
+```markdown
+- [Sprint N](docs/sprints/SPRINT_YYYY_MM_DD.md): 주요 성과 1줄 요약
+```
+
+#### 4.2 TODO.md
+
+- 완료 항목(`[x]`) 제거
+- 신규 Technical Debt 추가
+
+#### 4.3 STRUCTURE 문서 최종 확인
+
+- `/docs/structure/BACKEND_STRUCTURE.md`
+- `/docs/structure/FRONTEND_STRUCTURE.md`
+
+### 5. 커밋
+
+```bash
+git add .
+git commit -m "docs: close Sprint N"
+```
+
+커밋 로그 작성: `/docs/taskLog/commitMMDDNN.md`
+
+## 결과물
+
+Sprint 종료 후 구조:
 
 ```
 docs/
-├── BACKEND_API.md           # Backend API 명세 (지속 관리)
-├── BACKEND_STRUCTURE.md     # Backend 구조 (지속 관리)
-├── FRONTEND_ROUTES.md       # Frontend 라우트 (지속 관리)
-├── FRONTEND_STRUCTURE.md    # Frontend 구조 (지속 관리)
-├── ARCHITECTURE.md          # 전체 아키텍처 (지속 관리)
-├── TODO.md                  # 미루어진 작업 (지속 관리)
-├── DOCORDER.md              # 문서 관리 규칙 (AI용)
-├── DOCOPERATION.md          # 운영 가이드 (사람용)
-├── current_sprint/          # 현재 Sprint 작업 문서
-│   ├── ORDER{MMDD}.md       # 기능 개발 문서
-│   ├── REFACTORING{MMDD}.md # 리팩토링 문서
-│   └── backup/              # 이전 Sprint 백업
-└── sprints/                 # 완료된 Sprint 아카이브
-    ├── sprint1/             # Sprint 1 (2025-12-01 ~ 2025-12-09)
-    │   ├── ORDER*.md
+├── current_sprint/          # 비어있음 (다음 Sprint 준비 완료)
+└── sprints/
+    ├── sprint{N}/
+    │   ├── order*.md
+    │   ├── SAVETEMP_*.md
     │   └── REFACTORING*.md
-    └── SPRINT_2025_12_09.md # Sprint 1 요약
+    └── SPRINT_YYYY_MM_DD.md
 ```
-
-## ✍️ 작성 스타일 가이드
-
-### Markdown 규칙
-```markdown
-# 제목: H1 (한 문서에 한 개)
-## 섹션: H2
-### 하위 섹션: H3
-
-**강조**: 굵게
-`코드`: 인라인 코드
-```코드블럭```
-
-- 리스트: 하이픈
-1. 번호: 숫자
-
-[링크 텍스트](URL)
-```
-
-### 코드블럭
-
-언어 명시:
-
-````javascript
-function example() {}
-````
-
-````http
-GET /api/endpoint
-````
-
-````sql
-SELECT * FROM table;
-````
-
-### 표 형식
-
-```markdown
-| 컬럼1 | 컬럼2 | 컬럼3 |
-|------|------|------|
-| 값1  | 값2  | 값3  |
-```
-
-## 🚫 금지 사항
-
-1. **README.md 상세 내용**: README.md에 상세 구현 내용 금지 (링크만)
-2. **중복 문서화**: 같은 내용을 여러 파일에 반복 금지
-3. **하드코딩 경로**: 파일 경로는 상대 경로 사용
-4. **오래된 날짜**: 문서 업데이트 시 날짜 갱신 필수
-5. **미완성 커밋**: 문서 업데이트 없이 코드만 커밋 금지

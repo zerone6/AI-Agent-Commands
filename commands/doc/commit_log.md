@@ -7,4 +7,4 @@ description: "commit log 작성 순서에 따라서 작성합니다."
 
 ▼구체적인 순서
 
-1. CLAUDE.md파일의 커밋 로그 룰에 따라서 작성한다.
+1. CLAUDE.md파일의 4. 커밋 로그 작성에 따라서 작성한다.

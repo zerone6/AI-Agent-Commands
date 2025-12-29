@@ -1,23 +1,84 @@
 ---
 agent: agent
-description: "하나의 작업 계획서를 종료하는 과정"
+description: "작업 계획서 종료 및 문서화"
 ---
 
-현재 작업중인 order 파일의 전체 내용을 리뷰하여, 작업 내용을 문서화하고, 이후 계획을 만들기 위한 todo를 관리한다.
+ORDER 파일 실행 완료 후, 문서화 및 브랜치 정리를 수행한다.
 
-▼구체적인 순서
+## 사전 확인
 
-1. 작업 내용 정리 -> doc 반영
-   1. 작업한 내용을 전체적으로 검토하여 order파일의 내용에 수정이 필요한 부분이 있으면 수정한다
-   2. order파일의 작업 결과를 BACKEND_STRUCTURE.md, FRONTEND_STRUCTURE.md파일에 반영한다.
-2. TODO.md에 있는 항목중 이번 작업으로 완료된 항목에 대한 체크 및 TODO.md 파일 수정
-   1. 이번 작업으로 생긴 TODO를 TODO.md파일에 완료된 항목과, TODO.md로 이동한 항목을 order파일에 명시
-      - [x] 백엔드 인증 API 구현 필요 (`/auth/login`, `/auth/me`, `/auth/logout`)
-      - [x] 서브 사이트 실제 URL 연결
-      
-      TODO.md로 이동 세션을 order파일 하단에 추가해서 이동 한내용 기록
-      - [ ] 회원가입 기능 추가
-      - [ ] 비밀번호 찾기 기능 추가
-      - [ ] 소셜 로그인 (OAuth) 연동 고려
-      - [ ] 번역 키 추가 (에러 메시지 등)
-3. CLAUDE.md파일의 커밋 로그 룰에 따라서 커밋로그를 작성한다.
+- [ ] 모든 Phase 구현 완료
+- [ ] 자동화 테스트 전체 통과
+- [ ] 사용자 수동 테스트 완료 확인
+
+## 종료 순서
+
+### 1. ORDER 파일 최종 정리
+
+ORDER 파일을 검토하여 실제 구현 내용과 차이가 있는 부분을 수정한다:
+
+- 계획과 다르게 구현된 부분
+- 추가/삭제된 파일
+- 변경된 설계 의도
+
+### 2. STRUCTURE 문서 업데이트
+
+`/docs/structure/` 내 해당 파일에 변경사항 반영:
+
+| 파일 | 반영 내용 |
+|------|----------|
+| `BACKEND_STRUCTURE.md` | API, 서비스, 모델 변경 |
+| `FRONTEND_STRUCTURE.md` | 컴포넌트, 페이지, 훅 변경 |
+
+반영 대상:
+- 새 파일/폴더 추가
+- 파일 삭제
+- 주요 함수/컴포넌트/API 추가
+
+### 3. TODO 정리
+
+#### 3.1 완료 항목 체크
+
+`TODO.md`에서 이번 작업으로 완료된 항목을 `[x]`로 표시
+
+#### 3.2 신규 항목 추가
+
+이번 작업 중 발견된 신규 TODO를 `TODO.md`에 추가
+
+#### 3.3 ORDER 파일에 기록
+
+ORDER 파일 하단에 아래 섹션 추가:
+
+```markdown
+## TODO 처리 내역
+
+### 완료
+- [x] 항목 1
+- [x] 항목 2
+
+### TODO.md로 이동
+- [ ] 신규 항목 1
+- [ ] 신규 항목 2
+```
+
+### 4. 커밋
+
+1. 커밋 로그 작성 (`/docs/taskLog/commitMMDDNN.md`)
+2. 커밋 실행:
+   ```bash
+   git add .
+   git commit -m "<type>: <subject>"
+   ```
+
+### 5. 브랜치 머지
+
+feature 브랜치를 main에 머지한다:
+
+```bash
+git checkout main
+git merge <feature-branch>
+git push origin main
+git branch -d <feature-branch>
+```
+
+> ORDER 파일은 현재 위치에 그대로 유지한다. Sprint 종료 시 별도 정리 프로세스에서 처리된다.
