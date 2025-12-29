@@ -13,15 +13,21 @@
 
 ```
 ClaudeCommands/
-├─ CLAUDE.md                 # Claude 전역 Agent / Rule (원본)
-├─ commands/                 # 프롬프트 원본
+├─ CLAUDE.md                   # Claude 전역 Agent / Rule (원본)
+├─ commands/                   # 프롬프트 원본
 │  ├─ plan/
-│  │  └─ review.md
+│  │  ├─ execute_order.md      # sprint에 위치하는 최신 order파일을 실행
+│  │  ├─ finish_order.md       # 단일 order 파일의 종료 문서 정리하고, TODO에 과제 기록
+│  │  ├─ review_order.md       # 외부에서 가지고온 order 문서를 리뷰함. Plugin의 AI는 질의를 하면서 order파일을 만들어달라고 오더하면 Agent파일의 내용에 따라서 오더 파일 생성
+│  │  └─ save_temp.md          # 오더 파일 작업중 완료되지 못하고 중단 할때 상황을 저장하기 위한 커맨드
 │  ├─ release/
-│  │  └─ deploy.md
+│  │  ├─ refactor.md           # 프로젝트 구조를 리팩터링 하기 위한 커맨드
+│  │  └─ release.md            # 프로젝트를 실서비스에 릴리즈할때의 커맨드
 │  └─ doc/
-│     └─ design.md
-├─ install_command.sh        # Copilot 설정 배포 스크립트
+│     ├─ commit_log.md         # 단일 커밋 로그 작성
+│     └─ finishi_sprint        # 하나의 sprint 완료
+├─ install_command.sh          # Copilot 설정 배포 스크립트
+├─ CLAUDE.md                   # Claude 전역 Agent 파일
 └─ README.md
 ```
 
