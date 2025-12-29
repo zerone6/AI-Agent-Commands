@@ -28,8 +28,7 @@ description: "Sprint 종료 시점에 따라 문서 정리 및 커밋 로그 작
    - 새로운 Technical Debt 추가
 
 6. Git 커밋 로그 작성:
-   - CLAUDE.md파일의 커밋 로그 룰에 따라 작성 
-```
+   - CLAUDE.md파일의 커밋 로그 룰에 따라 작성
 
 ## 📁 문서 구조
 
