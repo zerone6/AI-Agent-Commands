@@ -9,3 +9,5 @@
 /shell-snapshots
 /statsig
 /todos
+settings.json
+stats-cache.json
