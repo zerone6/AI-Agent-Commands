@@ -36,26 +36,32 @@ ls /docs/sprints/
 # Sprint N 요약
 
 ## 기간
+
 YYYY-MM-DD ~ YYYY-MM-DD
 
 ## 주요 성과
+
 - 성과 1
 - 성과 2
 
 ## 완료된 PLAN
-| 파일 | 제목 | 요약 |
-|------|------|------|
+
+| 파일          | 제목 | 요약     |
+| ------------- | ---- | -------- |
 | planMMDDNN.md | 제목 | 1줄 요약 |
 
 ## 변경된 주요 파일
+
 - /path/to/file1
 - /path/to/file2
 
 ## 다음 Sprint 계획
+
 - 계획 1
 - 계획 2
 
 ## 잔여 이슈
+
 - 이슈 1
 ```
 
@@ -84,7 +90,8 @@ mv /docs/current_sprint/REFACTORING*.md /docs/sprints/sprint{N}/
 #### 4.1 README.md
 
 README.md파일이 없는 경우에는 생성한다. 프로젝트 소개와 큰 단위의 구조 설명, 실행 방법이 메인이다.
-README.md 파일에 구조나, 소개등의 주요 변경점이 있을 경우 수정한다. 
+README.md 파일에 구조나, 소개등의 주요 변경점이 있을 경우 수정한다.
+
 - 예 : 기능이 추가된경우, 변경된 경우, 구조가 바뀐 경우
 - README.md에는 변경이력은 기록하지 않는다. 현재의 상태를 기입한다.
 
@@ -101,6 +108,7 @@ README.md 파일에 구조나, 소개등의 주요 변경점이 있을 경우 �
 
 #### 4.3 STRUCTURE 문서 최종 확인
 
+- taskLog/commitMMDDNN.md에 구조 변경사항이 기록되어 있다면,
 - `/docs/structure/BACKEND_STRUCTURE.md`
 - `/docs/structure/FRONTEND_STRUCTURE.md`
 

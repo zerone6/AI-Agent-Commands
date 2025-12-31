@@ -4,6 +4,8 @@ Gemini를 위한 프로젝트 규칙 문서
 
 ---
 
+
+
 ## 0. Hybrid Workflow (System Artifacts + AGENTS Rules)
 
 AI 어시스턴트는 시스템 고유의 기능(Artifacts)과 이 프로젝트의 문서 규칙(AGENTS Rules)을 다음과 같은 순서로 결합하여 사용한다.
@@ -26,6 +28,7 @@ AI 어시스턴트는 시스템 고유의 기능(Artifacts)과 이 프로젝트�
 - **실시간 효율성**: 진행 중인 상세 체크리스트는 task.md와 Task View UI가 담당하며, TODO.md는 오직 '미루어진 작업(Backlog)' 관리용으로만 사용한다.
 - **문서의 영속성**: 브라우저나 채팅 내용이 사라져도 docs/ 내의 문서(order, plan, commitLog)를 통해 프로젝트의 히스토리를 완벽히 복구할 수 있어야 한다.
 - **Feedback Loop**: implementation_plan을 통해 사용자 승인을 얻기 전까지는 코드를 대량으로 수정하지 않는다.
+- System Artifact should be written **by Korean**
 # AGENTS Rules
 
 AI 코딩 어시스턴트를 위한 프로젝트 규칙 문서
@@ -86,15 +89,17 @@ docs/
 ├── taskLog/                 # 커밋 로그 보관
 │   └── commitMMDDNN.md
 ├── current_sprint/          # 현재 Sprint 작업 문서
-│   ├── orderMMDDNN.md       # 기능 개발 문서
+│   ├── planMMDDNN.md       # 기능 개발 문서
 │   ├── SAVETEMP_MMDDNN.md   # 작업 중단 기록
 │   └── REFACTORING*.md      # 리팩토링 문서 (추후 정의)
 └── sprints/                 # 완료된 Sprint 아카이브
     ├── sprint1/
-    │   ├── order*.md
+    │   ├── plan*.md
     │   └── SAVETEMP_*.md
     └── SPRINT_YYYY_MM_DD.md # Sprint 요약
 ```
+- 문서 트리는 기본 틀이므로, 프로젝트에 따라서 필요없는 내용은 만들지 않아도 된다.
+- 예 : Client Only Project의 경우 BACKEND관련 문서는 필요없다.
 
 ### 2.2 참조 경로
 
