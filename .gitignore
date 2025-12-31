@@ -14,3 +14,4 @@ stats-cache.json
 settings.local.json
 *.swp
 history.jsonl
+plugins/
