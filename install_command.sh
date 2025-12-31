@@ -6,6 +6,7 @@ PRUNE=0
 DO_CLAUDE=0
 DO_GEMINI=0
 DO_COPILOT=0
+SKIP_CONFIRM=0
 TARGET_PROJECT=""
 
 usage() {
@@ -22,6 +23,7 @@ Options:
   --copilot       Install GitHub Copilot (requires <target-project-path>)
   --force         Overwrite existing files/symlinks
   --prune         Prune broken Copilot prompt symlinks
+  -y, --yes       Skip confirmation prompt
   -h, --help      Show this help
 
 Examples:
@@ -41,6 +43,7 @@ while [[ $# -gt 0 ]]; do
     --claude) DO_CLAUDE=1; shift ;;
     --gemini) DO_GEMINI=1; shift ;;
     --copilot) DO_COPILOT=1; shift ;;
+    -y|--yes) SKIP_CONFIRM=1; shift ;;
     -h|--help) usage; exit 0 ;;
     -*)
       echo "Unknown arg: $1"
@@ -96,8 +99,107 @@ GEMINI_DIR="${HOME}/.gemini"
 COPILOT_DIR="${TARGET_PROJECT}/.github"
 COPILOT_PROMPTS_DIR="${COPILOT_DIR}/prompts"
 
+# backup date (MMDDYY format)
+BACKUP_DATE=$(date +%m%d%y)
+
 log() { printf "%s\n" "$*"; }
 ensure_dir() { mkdir -p "$1"; }
+
+# Backup existing file/symlink before overwriting
+backup_file() {
+  local file="$1"
+  local base_dir="$2"
+  local backup_dir="${base_dir}/backup/${BACKUP_DATE}"
+
+  if [[ -e "$file" || -L "$file" ]]; then
+    ensure_dir "$backup_dir"
+    local filename
+    filename="$(basename "$file")"
+    if [[ -e "${backup_dir}/${filename}" ]]; then
+      rm -rf "${backup_dir}/${filename}"
+    fi
+    mv "$file" "${backup_dir}/${filename}"
+    log "Backed up: $file -> ${backup_dir}/${filename}"
+  fi
+}
+
+# Check files that will be overwritten
+collect_affected_files() {
+  local affected=()
+
+  if [[ $DO_CLAUDE -eq 1 ]]; then
+    [[ -e "${CLAUDE_DIR}/CLAUDE.md" || -L "${CLAUDE_DIR}/CLAUDE.md" ]] && affected+=("${CLAUDE_DIR}/CLAUDE.md")
+    [[ -e "${CLAUDE_DIR}/commands" || -L "${CLAUDE_DIR}/commands" ]] && affected+=("${CLAUDE_DIR}/commands")
+  fi
+
+  if [[ $DO_GEMINI -eq 1 ]]; then
+    [[ -e "${GEMINI_DIR}/GEMINI.md" || -L "${GEMINI_DIR}/GEMINI.md" ]] && affected+=("${GEMINI_DIR}/GEMINI.md")
+    [[ -e "${GEMINI_DIR}/commands" || -L "${GEMINI_DIR}/commands" ]] && affected+=("${GEMINI_DIR}/commands")
+  fi
+
+  if [[ $DO_COPILOT -eq 1 && -n "$TARGET_PROJECT" ]]; then
+    [[ -e "${COPILOT_DIR}/copilot-instructions.md" || -L "${COPILOT_DIR}/copilot-instructions.md" ]] && \
+      affected+=("${COPILOT_DIR}/copilot-instructions.md")
+  fi
+
+  printf '%s\n' "${affected[@]}"
+}
+
+show_warning_and_confirm() {
+  local affected
+  affected=$(collect_affected_files)
+
+  echo ""
+  echo "========================================"
+  echo "  Files will be backed up and replaced"
+  echo "========================================"
+  echo ""
+
+  if [[ -n "$affected" ]]; then
+    echo "The following files will be backed up and replaced:"
+    echo "$affected" | while read -r f; do
+      [[ -n "$f" ]] && echo "  - $f"
+    done
+    echo ""
+    echo "Backup location:"
+    [[ $DO_CLAUDE -eq 1 ]] && echo "  - ~/.claude/backup/${BACKUP_DATE}/"
+    [[ $DO_GEMINI -eq 1 ]] && echo "  - ~/.gemini/backup/${BACKUP_DATE}/"
+    [[ $DO_COPILOT -eq 1 && -n "$TARGET_PROJECT" ]] && echo "  - ${COPILOT_DIR}/backup/${BACKUP_DATE}/"
+    echo ""
+  else
+    echo "No existing files found. New files will be created."
+    echo ""
+  fi
+
+  echo "IMPORTANT:"
+  echo "  If you have custom agent rules, add them to the origin files"
+  echo "  (they will be merged with AGENTS.md during build):"
+  echo ""
+  [[ $DO_CLAUDE -eq 1 ]] && echo "    - CLAUDE.origin.md   (for Claude rules)"
+  [[ $DO_GEMINI -eq 1 ]] && echo "    - GEMINI.origin.md   (for Gemini rules)"
+  [[ $DO_COPILOT -eq 1 ]] && echo "    - copilot-instructions.origin.md (for Copilot rules)"
+  echo ""
+  echo "  Origin files are located in: $REPO_ROOT"
+  echo ""
+  echo "========================================"
+  echo ""
+
+  if [[ "$SKIP_CONFIRM" -eq 1 ]]; then
+    log "Skipping confirmation (--yes flag)"
+    return 0
+  fi
+
+  read -rp "Do you want to proceed? [y/N] " response
+  case "$response" in
+    [yY][eE][sS]|[yY])
+      return 0
+      ;;
+    *)
+      log "Aborted."
+      exit 0
+      ;;
+  esac
+}
 
 remove_existing() {
   local path="$1"
@@ -141,6 +243,8 @@ install_claude() {
   log "== Claude (global) =="
   ensure_dir "$CLAUDE_DIR"
   build_file "$CLAUDE_ORIGIN" "$COMMON_RULES" "$CLAUDE_BUILT"
+  backup_file "${CLAUDE_DIR}/CLAUDE.md" "$CLAUDE_DIR"
+  backup_file "${CLAUDE_DIR}/commands" "$CLAUDE_DIR"
   safe_symlink "$CLAUDE_BUILT" "${CLAUDE_DIR}/CLAUDE.md"
   safe_symlink "$COMMANDS_SRC" "${CLAUDE_DIR}/commands"
 }
@@ -151,6 +255,8 @@ install_gemini() {
   build_file "$GEMINI_ORIGIN" "$COMMON_RULES" "$GEMINI_BUILT"
   local gemini_commands_path="${GEMINI_DIR}/commands"
   sed -i '' "s|{{GEMINI_COMMANDS_PATH}}|$gemini_commands_path|g; s|{{COMMANDS_PATH}}|$gemini_commands_path|g" "$GEMINI_BUILT" || true
+  backup_file "${GEMINI_DIR}/GEMINI.md" "$GEMINI_DIR"
+  backup_file "${GEMINI_DIR}/commands" "$GEMINI_DIR"
   safe_symlink "$GEMINI_BUILT" "${GEMINI_DIR}/GEMINI.md"
   safe_symlink "$COMMANDS_SRC" "${GEMINI_DIR}/commands"
 }
@@ -160,6 +266,7 @@ install_copilot() {
   ensure_dir "$COPILOT_DIR"
   ensure_dir "$COPILOT_PROMPTS_DIR"
   build_file "$COPILOT_ORIGIN" "$COMMON_RULES" "$COPILOT_BUILT"
+  backup_file "${COPILOT_DIR}/copilot-instructions.md" "$COPILOT_DIR"
   safe_symlink "$COPILOT_BUILT" "${COPILOT_DIR}/copilot-instructions.md"
 
   while IFS= read -r -d '' file; do
@@ -187,6 +294,9 @@ install_copilot() {
 
 log "Repo: $REPO_ROOT"
 [[ -n "$TARGET_PROJECT" ]] && log "Target project: $TARGET_PROJECT"
+
+# Show warning and get confirmation
+show_warning_and_confirm
 
 [[ $DO_GEMINI -eq 1 ]] && install_gemini
 [[ $DO_CLAUDE -eq 1 ]] && install_claude

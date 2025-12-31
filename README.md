@@ -286,6 +286,32 @@ chmod +x install_command.sh
 | `--prune` | 깨진 심볼릭 링크 정리 |
 | `--claude` | Claude만 설치 |
 | `--gemini` | Gemini만 설치 |
+| `-y, --yes` | 확인 프롬프트 생략 |
+
+### 주의사항
+
+스크립트 실행 시 기존 Agent 설정 파일이 **자동 백업** 후 덮어써집니다.
+
+1. **자동 백업**: 기존 파일은 `backup/MMDDYY/` 폴더로 자동 이동
+   - `~/.claude/backup/123124/CLAUDE.md`
+   - `~/.claude/backup/123124/commands`
+   - `~/.gemini/backup/123124/GEMINI.md`
+
+2. **커스텀 규칙 유지**: 기존에 사용하던 규칙이 있다면 origin 파일에 추가
+   - `CLAUDE.origin.md` - Claude 전용 규칙
+   - `GEMINI.origin.md` - Gemini 전용 규칙
+   - `copilot-instructions.origin.md` - Copilot 전용 규칙
+
+3. **빌드 과정**: `origin 파일 + AGENTS.md(공통)` = 최종 설정 파일
+
+```bash
+# 예: 기존 Claude 규칙을 origin에 추가 후 설치
+cat ~/.claude/CLAUDE.md >> ./CLAUDE.origin.md  # 기존 규칙 추가
+./install_command.sh --claude                   # 설치 실행
+
+# 복구 필요 시
+cp ~/.claude/backup/123124/CLAUDE.md ~/.claude/CLAUDE.md
+```
 
 ### 배포 결과
 
