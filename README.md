@@ -1,4 +1,4 @@
-# ClaudeCommands
+# AI Agent Command
 
 AI Agent를 위한 개발 워크플로우 명령어 중앙 관리 저장소
 
