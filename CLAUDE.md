@@ -1,5 +1,9 @@
 # AGENTS Rules
 
+CLAUDE Code를 위한 프로젝트 규칙 문서
+
+---# AGENTS Rules
+
 AI 코딩 어시스턴트를 위한 프로젝트 규칙 문서
 
 ---
