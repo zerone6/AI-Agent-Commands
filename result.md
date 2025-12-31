@@ -75,6 +75,15 @@
 
 ### 1.4 quality/ 카테고리 (품질 보증) - release/에서 이름 변경됨
 
+#### security.md (신규)
+
+| 항목 | 평가 |
+|------|------|
+| 적절성 | 우수 - OWASP Top 10 기반 체크리스트 |
+| 장점 | 심각도 분류, 상세한 검토 항목, 결과 문서 템플릿 |
+| 문제점 | 없음 (신규 생성) |
+| 개선안 | 프로젝트별 보안 도구 연동 (예: Snyk, SonarQube) |
+
 #### l10n.md
 
 | 항목 | 평가 |
@@ -111,6 +120,7 @@ commands/
 │   └── finish_order.md
 │
 ├── quality/        # 품질 보증 (release/에서 변경)
+│   ├── security.md
 │   ├── refactor.md
 │   └── l10n.md
 │
@@ -176,6 +186,7 @@ commands/
 
 | 명령어 | 트리거 | 설명 |
 |--------|--------|------|
+| `security` | 릴리즈 전, 인증 코드 변경 후 | OWASP 기반 보안 취약점 검토 |
 | `refactor` | 코드 정리 필요 | 미사용 코드 제거, 구조 최적화 |
 | `l10n` | i18n 점검 필요 | UI 텍스트에 다국어 지원 적용 |
 
@@ -202,7 +213,7 @@ commands/
          |
          v
 [품질 단계]
-  quality:refactor / quality:l10n
+  quality:security / quality:refactor / quality:l10n
          |
          v
 [Sprint 종료]

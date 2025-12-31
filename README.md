@@ -60,6 +60,7 @@ AI Agent를 위한 개발 워크플로우 명령어 중앙 관리 저장소
                                     |
                                     v
                     +-------------------------------+
+                    |  quality/security             |
                     |  quality/refactor             |
                     |  quality/l10n                 |
                     +---------------+---------------+
@@ -85,7 +86,7 @@ AI Agent를 위한 개발 워크플로우 명령어 중앙 관리 저장소
 |------|------|--------|
 | `plan/` | 계획 수립 | make_plan, review_order |
 | `dev/` | 개발 실행 | execute_plan, save_temp, finish_order |
-| `quality/` | 품질 보증 | refactor, l10n |
+| `quality/` | 품질 보증 | security, refactor, l10n |
 | `doc/` | 문서화 | commit_log, finish_sprint |
 
 ---
@@ -142,6 +143,14 @@ AI Agent를 위한 개발 워크플로우 명령어 중앙 관리 저장소
 | 설명 | 문서 정리, TODO 업데이트, 브랜치 정리 |
 
 ### quality/ - 품질 보증
+
+#### security
+
+| 항목 | 내용 |
+|------|------|
+| 트리거 | 릴리즈 전, 인증/권한 코드 변경 후 |
+| 출력 | `/docs/current_sprint/SECURITY_MMDDNN.md` |
+| 설명 | OWASP Top 10 기반 보안 취약점 검토 및 수정 |
 
 #### refactor
 
