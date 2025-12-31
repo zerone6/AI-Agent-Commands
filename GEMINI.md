@@ -1,3 +1,7 @@
+# Global Instructions
+작업의 단계별 실행은 `~/.gemini/commands` 폴더 내의 각 마크다운 파일(review_order.md 등)을 엄격히 따른다. 
+새로운 프로젝트를 시작하거나 작업 요청을 받으면 반드시 `~/.gemini/commands /plan/make_plan.md' 절차부터 시작하라.
+
 # AGENTS Rules
 
 AI 코딩 어시스턴트를 위한 프로젝트 규칙 문서
@@ -124,7 +128,11 @@ SELECT * FROM table;
 | 값1   | 값2   | 값3   |
 ```
 
-## 4. 파일 네이밍 규칙
+---
+
+
+
+## 9. 파일 네이밍 규칙
 
 | 유형 | 형식 | 예시 |
 |------|------|------|

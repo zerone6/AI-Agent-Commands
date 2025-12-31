@@ -1,6 +1,6 @@
 ---
 agent: agent
-description: "REVIEW된 작업 계획서에 따라서 구현 시작"
+description: "유저의 명령에 따라 작업 명령서 작성"
 ---
 
 ORDER 파일에 따라 구현을 수행한다.
