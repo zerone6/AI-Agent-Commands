@@ -31,6 +31,7 @@ ORDER 파일을 검토하여 실제 구현 내용과 차이가 있는 부분을 
 | `FRONTEND_STRUCTURE.md` | 컴포넌트, 페이지, 훅 변경 |
 
 반영 대상:
+
 - 새 파일/폴더 추가
 - 파일 삭제
 - 주요 함수/컴포넌트/API 추가
@@ -65,6 +66,7 @@ ORDER 파일 하단에 아래 섹션 추가:
 
 1. 커밋 로그 작성 (`/docs/taskLog/commitMMDDNN.md`)
 2. 커밋 실행:
+
    ```bash
    git add .
    git commit -m "<type>: <subject>"

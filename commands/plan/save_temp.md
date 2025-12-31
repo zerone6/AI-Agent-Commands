@@ -7,7 +7,7 @@ description: "작업 중단 시 상태 보존"
 
 ## 파일 경로
 
-```
+```text
 /docs/current_sprint/SAVETEMP_MMDDNN.md
 ```
 

@@ -25,7 +25,8 @@ ls /docs/sprints/
 ### 2. Sprint 요약 문서 생성
 
 파일 경로:
-```
+
+```text
 /docs/sprints/SPRINT_YYYY_MM_DD.md
 ```
 
@@ -111,7 +112,7 @@ git commit -m "docs: close Sprint N"
 
 Sprint 종료 후 구조:
 
-```
+```text
 docs/
 ├── current_sprint/          # 비어있음 (다음 Sprint 준비 완료)
 └── sprints/

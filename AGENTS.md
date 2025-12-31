@@ -47,7 +47,7 @@ AI 코딩 어시스턴트를 위한 프로젝트 규칙 문서
 
 ### 2.1 프로젝트 문서 트리
 
-```
+```text
 docs/
 ├── BACKEND_API.md           # Backend API 명세 (지속 관리)
 ├── BACKEND_STRUCTURE.md     # Backend 구조 (지속 관리)

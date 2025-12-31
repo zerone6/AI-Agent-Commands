@@ -12,7 +12,7 @@
 
 ## Repository Structure
 
-```
+```text
 ClaudeCommands/
 ├─ AGENTS.md                       # 공통 Agent/Rule (모든 IDE 공통)
 ├─ CLAUDE.origin.md                # Claude 특화 지침 (공통 제외)
@@ -30,6 +30,7 @@ ClaudeCommands/
 ```
 
 ### 원칙
+
 - **원본(Source of Truth)**은 `AGENTS.md` + 각 `*.origin.md` (이 레포에만 존재)
 - `CLAUDE.md / copilot-instructions.md / GEMINI.md`는 배포 시 스크립트가 자동 생성(빌드 산출물)
 - 각 프로젝트에는 **파일을 복사하지 않고 심볼릭 링크만 생성**
@@ -40,18 +41,21 @@ ClaudeCommands/
 ## 적용 대상
 
 ### Gemini (Antigravity)
+
 - `GEMINI.md`  (스크립트가 `GEMINI.origin.md` + `AGENTS.md`를 병합해 생성)
 - `commands/**`  (Gemini에서 사용할 commands 경로를 `~/.gemini/commands`로 심볼릭 링크)
 
 → 전역 경로 `~/.gemini` 에서 인식
 
 ### Claude
+
 - `CLAUDE.md`  (스크립트가 `CLAUDE.origin.md` + `AGENTS.md`를 병합해 생성)
 - `commands/**`  (`~/.claude/commands`로 심볼릭 링크)
 
 → 전역 경로 `~/.claude` 에서 인식
 
 ### GitHub Copilot
+
 - `.github/copilot-instructions.md`  (스크립트가 `copilot-instructions.origin.md` + `AGENTS.md`를 병합해 생성 후 링크)
 - `.github/prompts/*.prompt.md`
 
@@ -62,6 +66,7 @@ ClaudeCommands/
 ## 사용 방법
 
 ### 1. 중앙 레포 클론
+
 ```bash
 git clone git@github.com:YOUR_ID/ClaudeCommands.git ~/Github/ClaudeCommands
 cd ~/Github/ClaudeCommands
@@ -71,11 +76,13 @@ chmod +x install_command.sh
 ---
 
 ### 2. 특정 프로젝트에 Copilot 규칙 적용
+
 ```bash
 ./install_command.sh ~/GitHub/your_project
 ```
 
 또는 어디서든:
+
 ```bash
 bash ~/Github/ClaudeCommands/install_command.sh ~/GitHub/your_project
 ```
@@ -84,7 +91,7 @@ bash ~/Github/ClaudeCommands/install_command.sh ~/GitHub/your_project
 
 ### 3. 생성되는 결과 예시
 
-```
+```text
 your_project/
 └─ .github/
    ├─ copilot-instructions.md
@@ -104,18 +111,23 @@ your_project/
 ## 스크립트 옵션
 
 ### --force
+
 기존 파일/심볼릭 링크가 있어도 **강제로 덮어쓰기**
+
 ```bash
 ./install_command.sh --force ~/GitHub/your_project
 ```
 
 ### --prune
+
 원본 파일이 삭제되어 **깨진 Copilot 프롬프트 링크를 정리**
+
 ```bash
 ./install_command.sh --prunee ~/GitHub/your_project
 ```
 
 ### 조합 사용
+
 ```bash
 ./install_command.sh --force --prune ~/GitHub/your_project
 ```

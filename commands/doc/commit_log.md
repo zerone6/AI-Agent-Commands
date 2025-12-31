@@ -22,7 +22,7 @@ description: "commit log 작성 순서에 따라서 작성합니다."
 
 ### 1.3 파일 경로
 
-```
+```text
 /docs/taskLog/commitMMDDNN.md
 ```
 
@@ -36,7 +36,7 @@ description: "commit log 작성 순서에 따라서 작성합니다."
 
 ### 1.4 로그 형식
 
-```
+```text
 <type>: <subject>
 
 <body>
