@@ -58,15 +58,17 @@ docs/
 ├── taskLog/                 # 커밋 로그 보관
 │   └── commitMMDDNN.md
 ├── current_sprint/          # 현재 Sprint 작업 문서
-│   ├── orderMMDDNN.md       # 기능 개발 문서
+│   ├── planMMDDNN.md       # 기능 개발 문서
 │   ├── SAVETEMP_MMDDNN.md   # 작업 중단 기록
 │   └── REFACTORING*.md      # 리팩토링 문서 (추후 정의)
 └── sprints/                 # 완료된 Sprint 아카이브
     ├── sprint1/
-    │   ├── order*.md
+    │   ├── plan*.md
     │   └── SAVETEMP_*.md
     └── SPRINT_YYYY_MM_DD.md # Sprint 요약
 ```
+- 문서 트리는 기본 틀이므로, 프로젝트에 따라서 필요없는 내용은 만들지 않아도 된다.
+- 예 : Client Only Project의 경우 BACKEND관련 문서는 필요없다.
 
 ### 2.2 참조 경로
 
