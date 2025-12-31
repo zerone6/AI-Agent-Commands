@@ -3,16 +3,33 @@ set -euo pipefail
 
 FORCE=0
 PRUNE=0
+DO_CLAUDE=0
+DO_GEMINI=0
+DO_COPILOT=0
 TARGET_PROJECT=""
 
 usage() {
   cat <<EOF
 Usage:
-  $(basename "$0") [--force] [--prune] <target-project-path>
+  $(basename "$0") [options] [<target-project-path>]
+
+Default (no args):
+  Install Claude + Gemini (global)
 
 Options:
-  --force   기존 심볼릭 링크(또는 파일/폴더)가 있으면 덮어씀
-  --prune   Copilot prompts 디렉터리에서 깨진 심볼릭 링크(원본이 없는 링크) 정리
+  --claude        Install Claude only (global ~/.claude)
+  --gemini        Install Gemini only (global ~/.gemini)
+  --copilot       Install GitHub Copilot (requires <target-project-path>)
+  --force         Overwrite existing files/symlinks
+  --prune         Prune broken Copilot prompt symlinks
+  -h, --help      Show this help
+
+Examples:
+  $(basename "$0")
+  $(basename "$0") --force
+  $(basename "$0") --copilot ~/work/my-project
+  $(basename "$0") --claude --gemini
+  $(basename "$0") --claude --copilot ~/work/my-project
 EOF
 }
 
@@ -21,6 +38,9 @@ while [[ $# -gt 0 ]]; do
   case "$1" in
     --force) FORCE=1; shift ;;
     --prune) PRUNE=1; shift ;;
+    --claude) DO_CLAUDE=1; shift ;;
+    --gemini) DO_GEMINI=1; shift ;;
+    --copilot) DO_COPILOT=1; shift ;;
     -h|--help) usage; exit 0 ;;
     -*)
       echo "Unknown arg: $1"
@@ -39,29 +59,35 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if [[ -z "$TARGET_PROJECT" ]]; then
-  echo "Missing <target-project-path>"
+# Default behavior: Claude + Gemini
+if [[ $DO_CLAUDE -eq 0 && $DO_GEMINI -eq 0 && $DO_COPILOT -eq 0 ]]; then
+  DO_CLAUDE=1
+  DO_GEMINI=1
+fi
+
+# Validate Copilot requirement
+if [[ $DO_COPILOT -eq 1 && -z "$TARGET_PROJECT" ]]; then
+  echo "ERROR: --copilot requires <target-project-path>"
   usage
   exit 1
 fi
 
 # paths
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TARGET_PROJECT="$(cd "$TARGET_PROJECT" && pwd)"
+[[ -n "$TARGET_PROJECT" ]] && TARGET_PROJECT="$(cd "$TARGET_PROJECT" && pwd)"
 
-# common + origins (source of truth)
+# common + origins
 COMMON_RULES="${REPO_ROOT}/AGENTS.md"
-
 CLAUDE_ORIGIN="${REPO_ROOT}/CLAUDE.origin.md"
 COPILOT_ORIGIN="${REPO_ROOT}/copilot-instructions.origin.md"
 GEMINI_ORIGIN="${REPO_ROOT}/GEMINI.origin.md"
 
-# build outputs (generated)
+# built outputs
 CLAUDE_BUILT="${REPO_ROOT}/CLAUDE.md"
 COPILOT_BUILT="${REPO_ROOT}/copilot-instructions.md"
 GEMINI_BUILT="${REPO_ROOT}/GEMINI.md"
 
-# commands source
+# commands
 COMMANDS_SRC="${REPO_ROOT}/commands"
 
 # targets
@@ -92,14 +118,11 @@ safe_symlink() {
   if [[ -L "$dst" ]]; then
     local cur
     cur="$(readlink "$dst" || true)"
-    if [[ "$cur" == "$src" ]]; then
-      return 0
-    fi
+    [[ "$cur" == "$src" ]] && return 0
   fi
 
   remove_existing "$dst" || {
-    log "ERROR: Exists: $dst"
-    log "       Use --force to overwrite."
+    log "ERROR: Exists: $dst (use --force)"
     exit 1
   }
   ln -s "$src" "$dst"
@@ -110,108 +133,63 @@ build_file() {
   local origin="$1"
   local common="$2"
   local out="$3"
-
-  if [[ ! -f "$origin" ]]; then
-    log "ERROR: Missing origin: $origin"
-    exit 1
-  fi
-  if [[ ! -f "$common" ]]; then
-    log "ERROR: Missing common rules: $common"
-    exit 1
-  fi
-
-  log "Building $(basename "$out") (origin + common)..."
+  log "Building $(basename "$out")"
   cat "$origin" "$common" > "$out"
 }
 
-# 1) Gemini (Antigravity): global (~/.gemini)
-install_gemini_global() {
-  log "== Installing Gemini (Antigravity, global) =="
-  ensure_dir "$GEMINI_DIR"
-
-  build_file "$GEMINI_ORIGIN" "$COMMON_RULES" "$GEMINI_BUILT"
-
-  # Gemini에서 commands 경로를 명시해야 하는 경우를 위해 placeholder 치환 지원
-  # GEMINI.origin.md 안에 {{COMMANDS_PATH}} 또는 {{GEMINI_COMMANDS_PATH}}가 있으면 ~/.gemini/commands로 치환
-  local gemini_commands_path="${GEMINI_DIR}/commands"
-  if command -v perl >/dev/null 2>&1; then
-    perl -0777 -i -pe "s/\{\{GEMINI_COMMANDS_PATH\}\}|\{\{COMMANDS_PATH\}\}/$gemini_commands_path/g" "$GEMINI_BUILT" || true
-  else
-    # perl이 없다면 sed로 간단 치환 (BSD sed)
-    sed -i '' "s|{{GEMINI_COMMANDS_PATH}}|$gemini_commands_path|g; s|{{COMMANDS_PATH}}|$gemini_commands_path|g" "$GEMINI_BUILT" || true
-  fi
-
-  safe_symlink "$GEMINI_BUILT" "${GEMINI_DIR}/GEMINI.md"
-  safe_symlink "$COMMANDS_SRC" "${GEMINI_DIR}/commands"
-}
-
-# 2) Claude: global (~/.claude)
-install_claude_global() {
-  log "== Installing Claude (global) =="
+install_claude() {
+  log "== Claude (global) =="
   ensure_dir "$CLAUDE_DIR"
-
   build_file "$CLAUDE_ORIGIN" "$COMMON_RULES" "$CLAUDE_BUILT"
-
   safe_symlink "$CLAUDE_BUILT" "${CLAUDE_DIR}/CLAUDE.md"
   safe_symlink "$COMMANDS_SRC" "${CLAUDE_DIR}/commands"
 }
 
-# 3) Copilot: per-repo (.github)
-install_copilot_repo() {
-  log "== Installing GitHub Copilot (repo) =="
+install_gemini() {
+  log "== Gemini (Antigravity, global) =="
+  ensure_dir "$GEMINI_DIR"
+  build_file "$GEMINI_ORIGIN" "$COMMON_RULES" "$GEMINI_BUILT"
+  local gemini_commands_path="${GEMINI_DIR}/commands"
+  sed -i '' "s|{{GEMINI_COMMANDS_PATH}}|$gemini_commands_path|g; s|{{COMMANDS_PATH}}|$gemini_commands_path|g" "$GEMINI_BUILT" || true
+  safe_symlink "$GEMINI_BUILT" "${GEMINI_DIR}/GEMINI.md"
+  safe_symlink "$COMMANDS_SRC" "${GEMINI_DIR}/commands"
+}
+
+install_copilot() {
+  log "== GitHub Copilot (repo) =="
   ensure_dir "$COPILOT_DIR"
   ensure_dir "$COPILOT_PROMPTS_DIR"
-
   build_file "$COPILOT_ORIGIN" "$COMMON_RULES" "$COPILOT_BUILT"
-
   safe_symlink "$COPILOT_BUILT" "${COPILOT_DIR}/copilot-instructions.md"
 
-  # create flat prompt links: <folder>__<file>.prompt.md -> commands/<folder>/<file>.md
-  local file folder base link_name link_path src_path
-
-  if [[ ! -d "$COMMANDS_SRC" ]]; then
-    log "ERROR: Missing $COMMANDS_SRC"
-    exit 1
-  fi
-
   while IFS= read -r -d '' file; do
+    local folder base link_name link_path
     folder="$(basename "$(dirname "$file")")"
     base="$(basename "$file" .md)"
     link_name="${folder}__${base}.prompt.md"
     link_path="${COPILOT_PROMPTS_DIR}/${link_name}"
-    src_path="$file"
 
     if [[ -L "$link_path" ]]; then
       local cur
       cur="$(readlink "$link_path" || true)"
-      if [[ "$cur" == "$src_path" ]]; then
-        continue
-      fi
+      [[ "$cur" == "$file" ]] && continue
     fi
 
     remove_existing "$link_path" || {
-      log "ERROR: Exists: $link_path"
-      log "       Use --force to overwrite."
+      log "ERROR: Exists: $link_path (use --force)"
       exit 1
     }
-    ln -s "$src_path" "$link_path"
+    ln -s "$file" "$link_path"
   done < <(find "$COMMANDS_SRC" -mindepth 2 -maxdepth 2 -type f -name '*.md' -print0)
 
-  log "Copilot prompts linked under: $COPILOT_PROMPTS_DIR"
-
-  if [[ "$PRUNE" -eq 1 ]]; then
-    log "Pruning broken symlinks in $COPILOT_PROMPTS_DIR ..."
-    find "$COPILOT_PROMPTS_DIR" -type l ! -exec test -e {} \; -print -delete 2>/dev/null || true
-  fi
+  [[ "$PRUNE" -eq 1 ]] && find "$COPILOT_PROMPTS_DIR" -type l ! -exec test -e {} \; -delete || true
 }
 
-log "Building and deploying instructions..."
-log "Repo:   $REPO_ROOT"
-log "Target: $TARGET_PROJECT"
+log "Repo: $REPO_ROOT"
+[[ -n "$TARGET_PROJECT" ]] && log "Target project: $TARGET_PROJECT"
 
-install_gemini_global
-install_claude_global
-install_copilot_repo
+[[ $DO_GEMINI -eq 1 ]] && install_gemini
+[[ $DO_CLAUDE -eq 1 ]] && install_claude
+[[ $DO_COPILOT -eq 1 ]] && install_copilot
 
-log ""
-log "Done. 공통 규칙(AGENTS.md)과 IDE별 특화 지침(*.origin.md)이 병합되어 배포되었습니다."
+log "Done."
