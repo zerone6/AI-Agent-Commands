@@ -83,6 +83,7 @@ mv /docs/current_sprint/REFACTORING*.md /docs/sprints/sprint{N}/
 
 #### 4.1 README.md
 
+README.md파일이 없는 경우에는 생성한다. 프로젝트 소개와 큰 단위의 구조 설명, 실행 방법이 메인이다.
 README.md 파일에 구조나, 소개등의 주요 변경점이 있을 경우 수정한다. 
 - 예 : 기능이 추가된경우, 변경된 경우, 구조가 바뀐 경우
 - README.md에는 변경이력은 기록하지 않는다. 현재의 상태를 기입한다.
