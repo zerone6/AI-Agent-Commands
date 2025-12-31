@@ -108,7 +108,7 @@ README.md 파일에 구조나, 소개등의 주요 변경점이 있을 경우 �
 
 #### 4.3 STRUCTURE 문서 최종 확인
 
-- taskLog/commitMMDDNN.md에 구조 변경사항이 기록되어 있다면,
+- current_sprint 폴더와 taskLog/commitMMDDNN.md에 신규 기능 및 구조 변경사항이 기록되어 있다면,
 - `/docs/structure/BACKEND_STRUCTURE.md`
 - `/docs/structure/FRONTEND_STRUCTURE.md`
 
