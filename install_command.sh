@@ -98,9 +98,12 @@ CLAUDE_DIR="${HOME}/.claude"
 GEMINI_DIR="${HOME}/.gemini"
 COPILOT_DIR="${TARGET_PROJECT}/.github"
 COPILOT_PROMPTS_DIR="${COPILOT_DIR}/prompts"
+GEMINI_WORKFLOWS_DIR="/Users/seonpillhwang/.gemini/antigravity/global_workflows"
 
 # backup date (MMDDYY format)
 BACKUP_DATE=$(date +%m%d%y)
+# gemini backup date (MMYYDD format)
+GEMINI_BACKUP_DATE=$(date +%m%y%d)
 
 log() { printf "%s\n" "$*"; }
 ensure_dir() { mkdir -p "$1"; }
@@ -134,7 +137,6 @@ collect_affected_files() {
 
   if [[ $DO_GEMINI -eq 1 ]]; then
     [[ -e "${GEMINI_DIR}/GEMINI.md" || -L "${GEMINI_DIR}/GEMINI.md" ]] && affected+=("${GEMINI_DIR}/GEMINI.md")
-    [[ -e "${GEMINI_DIR}/commands" || -L "${GEMINI_DIR}/commands" ]] && affected+=("${GEMINI_DIR}/commands")
   fi
 
   if [[ $DO_COPILOT -eq 1 && -n "$TARGET_PROJECT" ]]; then
@@ -253,12 +255,28 @@ install_gemini() {
   log "== Gemini (Antigravity, global) =="
   ensure_dir "$GEMINI_DIR"
   build_file "$GEMINI_ORIGIN" "$COMMON_RULES" "$GEMINI_BUILT"
-  local gemini_commands_path="${GEMINI_DIR}/commands"
-  sed -i '' "s|{{GEMINI_COMMANDS_PATH}}|$gemini_commands_path|g; s|{{COMMANDS_PATH}}|$gemini_commands_path|g" "$GEMINI_BUILT" || true
   backup_file "${GEMINI_DIR}/GEMINI.md" "$GEMINI_DIR"
-  backup_file "${GEMINI_DIR}/commands" "$GEMINI_DIR"
   safe_symlink "$GEMINI_BUILT" "${GEMINI_DIR}/GEMINI.md"
-  safe_symlink "$COMMANDS_SRC" "${GEMINI_DIR}/commands"
+
+  log "== Gemini Workflows (global) =="
+  ensure_dir "$GEMINI_WORKFLOWS_DIR"
+  while IFS= read -r -d '' file; do
+    local folder base target_name target_path
+    folder="$(basename "$(dirname "$file")")"
+    base="$(basename "$file" .md)"
+    target_name="${folder}__${base}.md"
+    target_path="${GEMINI_WORKFLOWS_DIR}/${target_name}"
+
+    if [[ -e "$target_path" || -L "$target_path" ]]; then
+      local b_dir="${GEMINI_WORKFLOWS_DIR}/backup/${GEMINI_BACKUP_DATE}"
+      ensure_dir "$b_dir"
+      mv "$target_path" "${b_dir}/${target_name}"
+      log "Backed up workflow: $target_name -> ${b_dir}/${target_name}"
+    fi
+
+    cp "$file" "$target_path"
+    log "Copied workflow: $target_name"
+  done < <(find "$COMMANDS_SRC" -mindepth 2 -maxdepth 2 -type f -name '*.md' -print0)
 }
 
 install_copilot() {
