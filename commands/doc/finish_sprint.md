@@ -3,7 +3,7 @@ agent: agent
 description: "Sprint 종료 시 문서 정리 및 아카이브"
 ---
 
-Sprint의 모든 ORDER가 완료된 후, 문서 정리 및 아카이브를 수행한다.
+Sprint의 모든 PLAN이 완료된 후, 문서 정리 및 아카이브를 수행한다.
 
 ## 사전 확인
 
@@ -42,10 +42,10 @@ YYYY-MM-DD ~ YYYY-MM-DD
 - 성과 1
 - 성과 2
 
-## 완료된 ORDER
+## 완료된 PLAN
 | 파일 | 제목 | 요약 |
 |------|------|------|
-| orderMMDDNN.md | 제목 | 1줄 요약 |
+| planMMDDNN.md | 제목 | 1줄 요약 |
 
 ## 변경된 주요 파일
 - /path/to/file1
@@ -67,8 +67,8 @@ current_sprint의 완료된 파일을 sprint 폴더로 이동:
 # Sprint 폴더 생성
 mkdir -p /docs/sprints/sprint{N}
 
-# ORDER 파일 이동
-mv /docs/current_sprint/order*.md /docs/sprints/sprint{N}/
+# PLAN 파일 이동
+mv /docs/current_sprint/plan*.md /docs/sprints/sprint{N}/
 
 # SAVETEMP 파일 이동
 mv /docs/current_sprint/SAVETEMP_*.md /docs/sprints/sprint{N}/
@@ -117,7 +117,7 @@ docs/
 ├── current_sprint/          # 비어있음 (다음 Sprint 준비 완료)
 └── sprints/
     ├── sprint{N}/
-    │   ├── order*.md
+    │   ├── plan*.md
     │   ├── SAVETEMP_*.md
     │   └── REFACTORING*.md
     └── SPRINT_YYYY_MM_DD.md

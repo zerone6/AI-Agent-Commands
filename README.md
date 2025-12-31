@@ -1,71 +1,253 @@
-# Claude / Copilot Commands – Central Repository
+# ClaudeCommands
 
-이 레포지토리는 **Claude와 GitHub Copilot에서 공통으로 사용할 프롬프트(commands)와 에이전트 규칙을 중앙에서 관리**하기 위한 저장소입니다.
-
-- Claude: 전역 설정 (`~/.claude`)
-- Gemini (Antigravity): 전역 설정 (`~/.gemini`)
-- GitHub Copilot: 레포지토리 단위 설정 (`.github/`)
-
-이 저장소 하나를 기준으로, **여러 프로젝트에 동일한 Copilot 규칙을 심볼릭 링크로 배포**할 수 있습니다.
+AI Agent를 위한 개발 워크플로우 명령어 중앙 관리 저장소
 
 ---
 
-## Repository Structure
+## 1. 개요
+
+### 목적
+
+이 레포지토리는 **AI Agent (Claude, Copilot, Gemini)가 일관된 개발 워크플로우를 수행하도록 명령어를 중앙에서 관리**합니다.
+
+### 지원 도구
+
+| 도구 | 설정 위치 | 적용 범위 |
+|------|-----------|-----------|
+| Claude | `~/.claude/` | 전역 |
+| Gemini | `~/.gemini/` | 전역 |
+| GitHub Copilot | `.github/` | 프로젝트별 |
+
+### 핵심 개념
+
+| 용어 | 의미 | 예시 |
+|------|------|------|
+| **ORDER** | 사용자의 요청/명령 | "로그인 기능 추가해줘" |
+| **PLAN** | AI가 분석한 작업 계획서 | `planMMDDNN.md` |
+
+---
+
+## 2. 워크플로우
+
+### 전체 흐름
+
+```text
+                    +===============================+
+                    ||          SPRINT             ||
+                    +===============================+
+                    |                               |
+                    |  +-------------------------+  |
+                    |  |  ORDER #1 -> PLAN #1    |  |
+[ORDER] ──────────────>|  plan/make_plan         |  |
+                    |  |  plan/review_order      |  |
+                    |  +------------+------------+  |
+                    |               |               |
+                    |               v               |
+                    |  +-------------------------+  |
+                    |  |  dev/execute_plan       |  |
+                    |  |    (중단 시: save_temp) |  |
+                    |  +------------+------------+  |
+                    |               |               |
+                    |               v               |
+                    |  +-------------------------+  |
+                    |  |  dev/finish_order       |  |
+                    |  |  doc/commit_log         |  |
+                    |  +------------+------------+  |
+                    |               |               |
+                    |       (ORDER #2, #3... 반복)  |
+                    |               |               |
+                    +---------------+---------------+
+                                    |
+                                    v
+                    +-------------------------------+
+                    |  quality/refactor             |
+                    |  quality/l10n                 |
+                    +---------------+---------------+
+                                    |
+                                    v
+                    +-------------------------------+
+                    |  doc/finish_sprint            |
+                    |  (PLAN 아카이브, Sprint 종료) |
+                    +-------------------------------+
+```
+
+### 워크플로우 단계
+
+| 단계 | 설명 | 반복 |
+|------|------|------|
+| **1. 계획-개발 사이클** | ORDER 접수 -> PLAN 작성 -> 구현 -> 완료 | N회 반복 |
+| **2. 품질 점검** | 코드 리팩토링, 다국어 점검 | Sprint 내 필요 시 |
+| **3. Sprint 종료** | 모든 PLAN 아카이브, 요약 문서 생성 | Sprint 당 1회 |
+
+### 폴더 구조
+
+| 폴더 | 역할 | 명령어 |
+|------|------|--------|
+| `plan/` | 계획 수립 | make_plan, review_order |
+| `dev/` | 개발 실행 | execute_plan, save_temp, finish_order |
+| `quality/` | 품질 보증 | refactor, l10n |
+| `doc/` | 문서화 | commit_log, finish_sprint |
+
+---
+
+## 3. 명령어 상세
+
+### plan/ - 계획
+
+#### make_plan
+
+| 항목 | 내용 |
+|------|------|
+| 트리거 | 사용자가 기능 구현을 요청할 때 |
+| 입력 | 사용자의 요청 (ORDER) |
+| 출력 | `/docs/current_sprint/planMMDDNN.md` |
+| 설명 | 요청을 분석하여 Phase별 구현 계획 작성 |
+
+#### review_order
+
+| 항목 | 내용 |
+|------|------|
+| 트리거 | 외부 문서가 첨부되었을 때 |
+| 입력 | Jira 티켓, 기획서, 슬랙 메시지 등 |
+| 출력 | `/docs/current_sprint/planMMDDNN.md` |
+| 설명 | 외부 문서를 분석하여 make_plan 형식의 PLAN 생성 |
+
+### dev/ - 개발 실행
+
+#### execute_plan
+
+| 항목 | 내용 |
+|------|------|
+| 트리거 | PLAN이 사용자 승인된 후 |
+| 입력 | 승인된 PLAN 파일 |
+| 출력 | 구현된 코드, 업데이트된 PLAN |
+| 설명 | Phase별로 코드 구현 수행 |
+
+#### save_temp
+
+| 항목 | 내용 |
+|------|------|
+| 트리거 | 작업 중단이 필요할 때 |
+| 입력 | 현재 진행 상태 |
+| 출력 | `/docs/current_sprint/SAVETEMP_MMDDNN.md` |
+| 설명 | 현재 상태 저장, 나중에 재개 가능 |
+
+#### finish_order
+
+| 항목 | 내용 |
+|------|------|
+| 트리거 | 모든 Phase 구현 완료 시 |
+| 입력 | 완료된 PLAN |
+| 출력 | 커밋, 브랜치 머지 |
+| 설명 | 문서 정리, TODO 업데이트, 브랜치 정리 |
+
+### quality/ - 품질 보증
+
+#### refactor
+
+| 항목 | 내용 |
+|------|------|
+| 트리거 | 코드 정리가 필요할 때 |
+| 설명 | 미사용 코드 제거, 파일 분리 (300줄+), 구조 최적화 |
+
+#### l10n
+
+| 항목 | 내용 |
+|------|------|
+| 트리거 | 다국어 지원 점검이 필요할 때 |
+| 설명 | 하드코딩된 텍스트를 번역 키로 교체 |
+
+### doc/ - 문서화
+
+#### commit_log
+
+| 항목 | 내용 |
+|------|------|
+| 트리거 | 커밋 전 |
+| 출력 | `/docs/taskLog/commitMMDDNN.md` |
+| 설명 | Conventional Commit 형식의 로그 작성 |
+
+#### finish_sprint
+
+| 항목 | 내용 |
+|------|------|
+| 트리거 | Sprint 종료 시 |
+| 설명 | PLAN 파일 아카이브, Sprint 요약 문서 생성 |
+
+---
+
+## 4. 사용 예시
+
+### 신규 기능 개발
+
+```bash
+# 1. 사용자: "로그인 기능을 추가해줘"
+/plan:make_plan
+
+# 2. AI가 PLAN 작성 후 사용자 검토
+# 3. 승인 후 실행
+/dev:execute_plan
+
+# 4. 구현 완료 후
+/dev:finish_order
+
+# 5. 커밋
+/doc:commit_log
+```
+
+### 외부 기획서로 작업
+
+```bash
+# 1. 기획서.pdf 첨부 후
+/plan:review_order
+
+# 2. 생성된 PLAN 검토 및 승인
+# 3. 실행
+/dev:execute_plan
+```
+
+### 작업 중단 및 재개
+
+```bash
+# 중단 시
+/dev:save_temp
+
+# 재개 시: PLAN + SAVETEMP 파일과 함께
+/dev:execute_plan
+```
+
+### Sprint 종료
+
+```bash
+# 품질 점검
+/quality:refactor
+
+# Sprint 마무리
+/doc:finish_sprint
+```
+
+---
+
+## 5. 설치 및 배포
+
+### 레포지토리 구조
 
 ```text
 ClaudeCommands/
-├─ AGENTS.md                       # 공통 Agent/Rule (모든 IDE 공통)
-├─ CLAUDE.origin.md                # Claude 특화 지침 (공통 제외)
-├─ copilot-instructions.origin.md  # Copilot 특화 지침 (공통 제외)
-├─ GEMINI.origin.md                # Gemini(Antigravity) 특화 지침 (공통 제외)
-├─ commands/                       # 프롬프트 원본
+├─ AGENTS.md                       # 공통 Agent 규칙
+├─ CLAUDE.origin.md                # Claude 특화 지침
+├─ copilot-instructions.origin.md  # Copilot 특화 지침
+├─ GEMINI.origin.md                # Gemini 특화 지침
+├─ commands/                       # 명령어 원본
 │  ├─ plan/
-│  ├─ release/
+│  ├─ dev/
+│  ├─ quality/
 │  └─ doc/
-├─ install_command.sh              # 배포 스크립트 (빌드+심볼릭 링크)
-├─ CLAUDE.md                       # (생성됨) CLAUDE.origin.md + AGENTS.md
-├─ copilot-instructions.md         # (생성됨) copilot-instructions.origin.md + AGENTS.md
-├─ GEMINI.md                       # (생성됨) GEMINI.origin.md + AGENTS.md
+├─ install_command.sh              # 배포 스크립트
 └─ README.md
 ```
 
-### 원칙
-
-- **원본(Source of Truth)**은 `AGENTS.md` + 각 `*.origin.md` (이 레포에만 존재)
-- `CLAUDE.md / copilot-instructions.md / GEMINI.md`는 배포 시 스크립트가 자동 생성(빌드 산출물)
-- 각 프로젝트에는 **파일을 복사하지 않고 심볼릭 링크만 생성**
-- Copilot 규칙은 **프로젝트 레포 기준**으로 적용
-
----
-
-## 적용 대상
-
-### Gemini (Antigravity)
-
-- `GEMINI.md`  (스크립트가 `GEMINI.origin.md` + `AGENTS.md`를 병합해 생성)
-- `commands/**`  (Gemini에서 사용할 commands 경로를 `~/.gemini/commands`로 심볼릭 링크)
-
-→ 전역 경로 `~/.gemini` 에서 인식
-
-### Claude
-
-- `CLAUDE.md`  (스크립트가 `CLAUDE.origin.md` + `AGENTS.md`를 병합해 생성)
-- `commands/**`  (`~/.claude/commands`로 심볼릭 링크)
-
-→ 전역 경로 `~/.claude` 에서 인식
-
-### GitHub Copilot
-
-- `.github/copilot-instructions.md`  (스크립트가 `copilot-instructions.origin.md` + `AGENTS.md`를 병합해 생성 후 링크)
-- `.github/prompts/*.prompt.md`
-
-→ **각 프로젝트 레포 단위로 인식**
-
----
-
-## 사용 방법
-
-### 1. 중앙 레포 클론
+### 설치
 
 ```bash
 git clone git@github.com:YOUR_ID/ClaudeCommands.git ~/Github/ClaudeCommands
@@ -73,101 +255,55 @@ cd ~/Github/ClaudeCommands
 chmod +x install_command.sh
 ```
 
----
+### 배포
 
-### 2. 특정 프로젝트에 Copilot 규칙 적용
-
-```bash
-./install_command.sh ~/GitHub/your_project
-```
-
-또는 어디서든:
+#### 기본 (Claude + Gemini 전역 설치)
 
 ```bash
-bash ~/Github/ClaudeCommands/install_command.sh ~/GitHub/your_project
+./install_command.sh
 ```
 
----
+#### Copilot (프로젝트별)
 
-### 3. 생성되는 결과 예시
+```bash
+./install_command.sh --copilot ~/GitHub/your_project
+```
+
+#### 옵션
+
+| 옵션 | 설명 |
+|------|------|
+| `--force` | 기존 파일 덮어쓰기 |
+| `--prune` | 깨진 심볼릭 링크 정리 |
+| `--claude` | Claude만 설치 |
+| `--gemini` | Gemini만 설치 |
+
+### 배포 결과
 
 ```text
-your_project/
-└─ .github/
-   ├─ copilot-instructions.md
-   │   └─ (symlink → ClaudeCommands/CLAUDE.md)
-   └─ prompts/
-      ├─ plan__review.prompt.md
-      │   └─ (symlink → ClaudeCommands/commands/plan/review.md)
-      ├─ release__deploy.prompt.md
-      └─ doc__design.prompt.md
-```
+~/.claude/
+├─ CLAUDE.md
+└─ commands/ -> (symlink)
 
-- **폴더명 + 파일명**을 조합한 형태로 Copilot 프롬프트 생성
-- Copilot이 요구하는 flat 구조를 자동으로 만족
+~/.gemini/
+├─ GEMINI.md
+└─ commands/ -> (symlink)
 
----
-
-## 스크립트 옵션
-
-### --force
-
-기존 파일/심볼릭 링크가 있어도 **강제로 덮어쓰기**
-
-```bash
-./install_command.sh --force ~/GitHub/your_project
-```
-
-### --prune
-
-원본 파일이 삭제되어 **깨진 Copilot 프롬프트 링크를 정리**
-
-```bash
-./install_command.sh --prunee ~/GitHub/your_project
-```
-
-### 조합 사용
-
-```bash
-./install_command.sh --force --prune ~/GitHub/your_project
+your_project/.github/
+├─ copilot-instructions.md
+└─ prompts/
+   ├─ plan__make_plan.prompt.md
+   ├─ dev__execute_plan.prompt.md
+   └─ ...
 ```
 
 ---
 
-## 프롬프트 추가 / 변경 워크플로우
+## 부록: 용어 정의
 
-1. `ClaudeCommands/commands/` 아래에 `.md` 파일 추가 또는 수정
-2. 커밋
-3. 각 프로젝트에서 다시 실행
-
-```bash
-./install_command.sh ~/GitHub/your_project
-```
-
-→ 새 프롬프트만 자동으로 링크 추가됨  
-→ 기존 링크는 기본적으로 유지
-
----
-
-## 주의사항
-
-- 대상 프로젝트 경로는 반드시 **Git repository 루트**여야 합니다.
-- `.github/` 디렉터리는 Git에 포함되므로 팀 프로젝트라면 동료에게도 동일 규칙이 적용됩니다.
-- 이 레포에는 **비밀 값(API Key, Token 등)을 절대 포함하지 마세요.**
-
----
-
-## 요약
-
-- 프롬프트/Agent는 **이 레포에서만 관리**
-- 프로젝트에는 **심볼릭 링크만 배포**
-- Claude / Copilot / Gemini를 동시에 만족하는 구조
-- 새 PC / 새 프로젝트에서도 재현성 보장
-
----
-
-## One-liner
-
-```bash
-bash ~/Github/ClaudeCommands/install_command.sh ~/GitHub/your_project
-```
+| 용어 | 정의 |
+|------|------|
+| ORDER | 사용자의 원본 요청. 구두 명령, 외부 문서 등 |
+| PLAN | AI가 ORDER를 분석하여 작성한 구조화된 작업 계획서 |
+| Phase | PLAN 내의 작업 단계 |
+| Sprint | 여러 PLAN을 포함하는 작업 주기 (작업량 기반, 시간 기반 아님) |

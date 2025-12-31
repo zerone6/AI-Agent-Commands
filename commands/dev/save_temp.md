@@ -26,7 +26,7 @@ description: "작업 중단 시 상태 보존"
 
 ## 기본 정보
 - 일시: YYYY-MM-DD HH:MM (Asia/Tokyo)
-- ORDER 파일: /docs/current_sprint/orderMMDDNN.md
+- PLAN 파일: /docs/current_sprint/planMMDDNN.md
 - 브랜치: feature/xxx
 - 마지막 커밋: <commit-id>
 
@@ -55,7 +55,7 @@ description: "작업 중단 시 상태 보존"
 
 ```bash
 git add .
-git commit -m "wip: <ORDER 제목> - Phase N 진행 중"
+git commit -m "wip: <PLAN 제목> - Phase N 진행 중"
 ```
 
 ### 3. 커밋 로그 작성
@@ -66,7 +66,7 @@ git commit -m "wip: <ORDER 제목> - Phase N 진행 중"
 
 별도 RESUME 커맨드 없이, 다음 순서로 재개한다:
 
-1. 해당 ORDER 파일과 SAVETEMP 파일을 함께 execute
+1. 해당 PLAN 파일과 SAVETEMP 파일을 함께 execute_plan
 2. SAVETEMP 파일의 "다음 작업" 항목부터 진행
 
 > SAVETEMP 파일은 삭제하지 않고 유지한다. Sprint 종료 시 별도 정리 프로세스에서 처리된다.
