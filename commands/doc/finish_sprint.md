@@ -83,6 +83,10 @@ mv /docs/current_sprint/REFACTORING*.md /docs/sprints/sprint{N}/
 
 #### 4.1 README.md
 
+README.md 파일에 구조나, 소개등의 주요 변경점이 있을 경우 수정한다. 
+- 예 : 기능이 추가된경우, 변경된 경우, 구조가 바뀐 경우
+- README.md에는 변경이력은 기록하지 않는다. 현재의 상태를 기입한다.
+
 "최근 Sprint" 섹션에 추가:
 
 ```markdown
