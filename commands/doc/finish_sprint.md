@@ -85,21 +85,17 @@ mv /docs/current_sprint/REFACTORING*.md /docs/sprints/sprint{N}/
 
 이동 후 `/docs/current_sprint/`는 비어있는 상태가 된다.
 
+planning 폴더의 파일을 sprint 폴더로 이동:
+
+```bash
+mv /docs/planning/*.md /docs/sprints/sprint{N}/
+```
+
 ### 4. 문서 업데이트
 
 #### 4.1 README.md
 
-README.md파일이 없는 경우에는 생성한다. 프로젝트 소개와 큰 단위의 구조 설명, 실행 방법이 메인이다.
-README.md 파일에 구조나, 소개등의 주요 변경점이 있을 경우 수정한다.
-
-- 예 : 기능이 추가된경우, 변경된 경우, 구조가 바뀐 경우
-- README.md에는 변경이력은 기록하지 않는다. 현재의 상태를 기입한다.
-
-"최근 Sprint" 섹션에 추가:
-
-```markdown
-- [Sprint N](docs/sprints/SPRINT_YYYY_MM_DD.md): 주요 성과 1줄 요약
-```
+init_readme.md를 참고하여 README.md를 업데이트한다. 11. sprint 정보 추가: 문서 링크 및 요약
 
 #### 4.2 TODO.md
 
@@ -121,6 +117,12 @@ git commit -m "docs: close Sprint N"
 
 커밋 로그 작성: `/docs/taskLog/commitMMDDNN.md`
 
+### 6. Main branch merge
+
+프로젝트 전체를 main branch에 merge:
+
+````bash
+
 ## 결과물
 
 Sprint 종료 후 구조:
@@ -134,4 +136,4 @@ docs/
     │   ├── SAVETEMP_*.md
     │   └── REFACTORING*.md
     └── SPRINT_YYYY_MM_DD.md
-```
+````

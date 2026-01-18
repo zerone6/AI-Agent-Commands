@@ -25,9 +25,9 @@ PLAN 파일을 검토하여 실제 구현 내용과 차이가 있는 부분을 �
 
 `/docs/structure/` 내 해당 파일에 변경사항 반영:
 
-| 파일 | 반영 내용 |
-|------|----------|
-| `BACKEND_STRUCTURE.md` | API, 서비스, 모델 변경 |
+| 파일                    | 반영 내용                 |
+| ----------------------- | ------------------------- |
+| `BACKEND_STRUCTURE.md`  | API, 서비스, 모델 변경    |
 | `FRONTEND_STRUCTURE.md` | 컴포넌트, 페이지, 훅 변경 |
 
 반영 대상:
@@ -54,10 +54,12 @@ PLAN 파일 하단에 아래 섹션 추가:
 ## TODO 처리 내역
 
 ### 완료
+
 - [x] 항목 1
 - [x] 항목 2
 
 ### TODO.md로 이동
+
 - [ ] 신규 항목 1
 - [ ] 신규 항목 2
 ```
@@ -72,15 +74,9 @@ PLAN 파일 하단에 아래 섹션 추가:
    git commit -m "<type>: <subject>"
    ```
 
-### 5. 브랜치 머지
+### 5. 브랜치 푸쉬
 
-feature 브랜치를 main에 머지한다:
-
-```bash
-git checkout main
-git merge <feature-branch>
-git push origin main
-git branch -d <feature-branch>
-```
+1. 커밋한 브랜치 푸쉬
+2. main brach로 병합하지 않음
 
 > PLAN 파일은 현재 위치에 그대로 유지한다. Sprint 종료 시 별도 정리 프로세스에서 처리된다.
